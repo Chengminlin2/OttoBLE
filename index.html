@@ -17,47 +17,65 @@ button.blue{ background:#0275d8;}
 <body>
 
 <h2>OTTO BLE 遙控器</h2>
-<button id="connectBle">🔗 連線 Bluetooth</button>
+<button id="connectBle">連線 Bluetooth</button>
 <p id="status">尚未連線</p>
 
 <div class="container">
-    <button onclick="sendCmd('forward')">⬆ Forward</button><br>
-    <button onclick="sendCmd('left')">⬅ Left</button>
-    <button onclick="sendCmd('stop')" class="red">⏹ Stop</button>
-    <button onclick="sendCmd('right')">➡ Right</button><br>
-    <button onclick="sendCmd('backward')">⬇ Backward</button>
+    <button onclick="sendMove('forward')">⬆ Forward</button><br>
+    <button onclick="sendMove('left')">⬅ Left</button>
+    <button onclick="sendMove('stop')" class="red">⏹ Stop</button>
+    <button onclick="sendMove('right')">➡ Right</button><br>
+    <button onclick="sendMove('backward')">⬇ Backward</button>
 </div>
 
 <h3>Emotion 動作</h3>
-<button onclick="sendCmd('happy')">😄 Happy</button>
-<button onclick="sendCmd('sad')">😢 Sad</button>
-<button onclick="sendCmd('victory')">🏆 Victory</button>
-<button onclick="sendCmd('fart')">💨 Fart</button>
+<button onclick="sendGesture('happy')">Happy</button>
+<button onclick="sendGesture('sad')">Sad</button>
+<button onclick="sendGesture('victory')">Victory</button>
+<button onclick="sendGesture('fart')">Fart</button>
 
 <script>
 let device, server, uartService, tx;
 
+// 速度索引 0~5，先固定 2，如果要加 slider 再改這裡
+let speedIndex = 2;
+
 document.getElementById("connectBle").onclick = async () => {
     try{
         device = await navigator.bluetooth.requestDevice({
-            filters:[ {namePrefix:"Otto"} ],
-            optionalServices:["0000ffe0-0000-1000-8000-00805f9b34fb"]   // HM-10 UART Service
+            filters:[
+                { namePrefix: "Otto" },
+                { services: ["0000ffe0-0000-1000-8000-00805f9b34fb"] }
+            ]
         });
 
         server = await device.gatt.connect();
         uartService = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
         tx = await uartService.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
 
-        document.getElementById("status").innerHTML="🟢 已連線: " + device.name;
+        document.getElementById("status").innerHTML = "已連線: " + device.name;
     }catch(e){
-        alert("連線失敗" + e);
+        alert("連線失敗: " + e);
     }
 };
 
-function sendCmd(cmd){
-    if(!tx) { alert("請先連線 BLE"); return;}
-    tx.writeValue(new TextEncoder().encode(cmd+"\n"));
-    console.log(">>> Sent:", cmd);
+function sendRaw(str){
+    if(!tx) { alert("請先連線 BLE"); return; }
+    const data = new TextEncoder().encode(str);
+    tx.writeValue(data);
+    console.log(">>> Sent:", JSON.stringify(str));
+}
+
+// 移動 / 模式：指令 + 速度數字 + 換行
+function sendMove(cmd){
+    const line = cmd + String(speedIndex) + "\n";
+    sendRaw(line);
+}
+
+// 表情：指令 + "0" + 換行，避免 n 被亂設
+function sendGesture(cmd){
+    const line = cmd + "0\n";
+    sendRaw(line);
 }
 </script>
 
