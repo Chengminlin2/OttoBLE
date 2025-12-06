@@ -1,60 +1,65 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-TW">
 <head>
 <meta charset="UTF-8">
-<title>Otto BLE Controller</title>
+<title>Otto Web BLE Controller</title>
 <style>
-body { font-family: Arial; text-align:center; background:#f5f5f5; }
-h2 { margin-top:20px; }
-button {
-    width:45%; padding:15px; margin:5px; font-size:20px;
-    border-radius:12px;border:none;background:#4CAF50;color:white;
+body { font-family: Arial, sans-serif; text-align:center; background:#f9f9f9; }
+button{
+    width:120px; height:50px; margin:10px; font-size:18px;
+    border:none; border-radius:10px; background:#4CAF50; color:white;
 }
-button:active { background:#2e8b57;}
-#status{font-size:18px;color:#333;margin:10px;}
+button.red{ background:#d9534f; }
+button.blue{ background:#0275d8;}
+.container{ margin-top:30px; }
 </style>
 </head>
-
 <body>
-<h2>🤖 Otto BLE Controller</h2>
-<p id="status">尚未連接</p>
-<button onclick="connect()">🔗 連接 Otto</button><br>
 
-<h3>🎮 動作控制</h3>
-<button onclick="send('F')">⬆ 前進</button>
-<button onclick="send('B')">⬇ 後退</button><br>
-<button onclick="send('L')">⬅ 左轉</button>
-<button onclick="send('R')">➡ 右轉</button><br>
+<h2>OTTO BLE 遙控器</h2>
+<button id="connectBle">🔗 連線 Bluetooth</button>
+<p id="status">尚未連線</p>
 
-<h3>🕺 特殊動作</h3>
-<button onclick="send('D')">💃 跳舞</button>
-<button onclick="send('W')">🤪 搖頭</button>
-<button onclick="send('S')">😴 睡覺</button>
+<div class="container">
+    <button onclick="sendCmd('forward')">⬆ Forward</button><br>
+    <button onclick="sendCmd('left')">⬅ Left</button>
+    <button onclick="sendCmd('stop')" class="red">⏹ Stop</button>
+    <button onclick="sendCmd('right')">➡ Right</button><br>
+    <button onclick="sendCmd('backward')">⬇ Backward</button>
+</div>
+
+<h3>Emotion 動作</h3>
+<button onclick="sendCmd('happy')">😄 Happy</button>
+<button onclick="sendCmd('sad')">😢 Sad</button>
+<button onclick="sendCmd('victory')">🏆 Victory</button>
+<button onclick="sendCmd('fart')">💨 Fart</button>
 
 <script>
-let device, server, uart;
+let device, server, uartService, tx;
 
-async function connect(){
+document.getElementById("connectBle").onclick = async () => {
     try{
         device = await navigator.bluetooth.requestDevice({
-            filters:[{ namePrefix:"HM" },{ services:["0000ffe0-0000-1000-8000-00805f9b34fb"] }]
+            filters:[ {namePrefix:"Otto"} ],
+            optionalServices:["0000ffe0-0000-1000-8000-00805f9b34fb"]   // HM-10 UART Service
         });
 
         server = await device.gatt.connect();
-        uart = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
-        charaTX = await uart.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
+        uartService = await server.getPrimaryService("0000ffe0-0000-1000-8000-00805f9b34fb");
+        tx = await uartService.getCharacteristic("0000ffe1-0000-1000-8000-00805f9b34fb");
 
-        document.getElementById("status").textContent="🟢 已連接 Otto!";
+        document.getElementById("status").innerHTML="🟢 已連線: " + device.name;
     }catch(e){
-        document.getElementById("status").textContent="連線失敗！";
-        console.error(e);
+        alert("連線失敗" + e);
     }
-}
+};
 
-function send(cmd){
-    if(!charaTX)return alert("尚未連線!");
-    charaTX.writeValue(new TextEncoder().encode(cmd));
+function sendCmd(cmd){
+    if(!tx) { alert("請先連線 BLE"); return;}
+    tx.writeValue(new TextEncoder().encode(cmd+"\n"));
+    console.log(">>> Sent:", cmd);
 }
 </script>
+
 </body>
 </html>
