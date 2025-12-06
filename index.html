@@ -30,9 +30,22 @@ button.blue{ background:#0275d8;}
 </div>
 
 <h3>Emotion 動作</h3>
+<!-- 第一列 -->
 <button onclick="sendGesture('happy')">Happy</button>
+<button onclick="sendGesture('superhappy')">Super Happy</button>
 <button onclick="sendGesture('sad')">Sad</button>
+<button onclick="sendGesture('sleeping')">Sleeping</button><br>
+<!-- 第二列 -->
+<button onclick="sendGesture('confused')">Confused</button>
+<button onclick="sendGesture('fretful')">Fretful</button>
+<button onclick="sendGesture('love')">Love</button>
+<button onclick="sendGesture('angry')">Angry</button><br>
+<!-- 第三列 -->
+<button onclick="sendGesture('magic')">Magic</button>
+<button onclick="sendGesture('wave')">Wave</button>
 <button onclick="sendGesture('victory')">Victory</button>
+<button onclick="sendGesture('fail')">Fail</button><br>
+<!-- 第四列 -->
 <button onclick="sendGesture('fart')">Fart</button>
 
 <script>
@@ -76,7 +89,6 @@ function disconnect(){
     if (device && device.gatt && device.gatt.connected){
         device.gatt.disconnect();
     } else {
-        // 已經是斷線狀態
         onDisconnected();
     }
 }
@@ -107,7 +119,7 @@ function sendMove(cmd){
     sendRaw(line);
 }
 
-// 表情：指令 + "0" + 換行，避免 n 被亂設
+// 表情：指令 + "0" + 換行，讓 Arduino 那邊 n 會被設成 0（合法索引）
 function sendGesture(cmd){
     const line = cmd + "0\n";
     sendRaw(line);
