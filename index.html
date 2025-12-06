@@ -6,7 +6,7 @@
 <style>
 body { font-family: Arial, sans-serif; text-align:center; background:#f9f9f9; }
 button{
-    width:120px; height:50px; margin:10px; font-size:18px;
+    width:140px; height:60px; margin:10px; font-size:16px;
     border:none; border-radius:10px; background:#4CAF50; color:white;
 }
 button.red{ background:#d9534f; }
@@ -17,36 +17,36 @@ button.blue{ background:#0275d8;}
 <body>
 
 <h2>OTTO BLE 遙控器</h2>
-<button id="connectBle">連線 Bluetooth</button>
-<button id="disconnectBle" disabled>中斷連線</button>
+<button id="connectBle">連線 / Connect</button>
+<button id="disconnectBle" disabled>中斷連線 / Disconnect</button>
 <p id="status">尚未連線</p>
 
 <div class="container">
-    <button onclick="sendMove('forward')">⬆ Forward</button><br>
-    <button onclick="sendMove('left')">⬅ Left</button>
-    <button onclick="sendMove('stop')" class="red">⏹ Stop</button>
-    <button onclick="sendMove('right')">➡ Right</button><br>
-    <button onclick="sendMove('backward')">⬇ Backward</button>
+    <button onclick="sendMove('forward')">⬆ 前進 / Forward (forward)</button><br>
+    <button onclick="sendMove('left')">⬅ 左轉 / Left (left)</button>
+    <button onclick="sendMove('stop')" class="red">⏹ 停止 / Stop (stop)</button>
+    <button onclick="sendMove('right')">➡ 右轉 / Right (right)</button><br>
+    <button onclick="sendMove('backward')">⬇ 後退 / Backward (backward)</button>
 </div>
 
-<h3>Emotion 動作</h3>
+<h3>表情與動作 / Emotions & Gestures</h3>
 <!-- 第一列 -->
-<button onclick="sendGesture('happy')">Happy</button>
-<button onclick="sendGesture('superhappy')">Super Happy</button>
-<button onclick="sendGesture('sad')">Sad</button>
-<button onclick="sendGesture('sleeping')">Sleeping</button><br>
+<button onclick="sendGesture('happy')">開心 / Happy (happy)</button>
+<button onclick="sendGesture('superhappy')">超開心 / Super Happy (superhappy)</button>
+<button onclick="sendGesture('sad')">難過 / Sad (sad)</button>
+<button onclick="sendGesture('sleeping')">睡覺 / Sleeping (sleeping)</button><br>
 <!-- 第二列 -->
-<button onclick="sendGesture('confused')">Confused</button>
-<button onclick="sendGesture('fretful')">Fretful</button>
-<button onclick="sendGesture('love')">Love</button>
-<button onclick="sendGesture('angry')">Angry</button><br>
+<button onclick="sendGesture('confused')">困惑 / Confused (confused)</button>
+<button onclick="sendGesture('fretful')">煩躁 / Fretful (fretful)</button>
+<button onclick="sendGesture('love')">愛心 / Love (love)</button>
+<button onclick="sendGesture('angry')">生氣 / Angry (angry)</button><br>
 <!-- 第三列 -->
-<button onclick="sendGesture('magic')">Magic</button>
-<button onclick="sendGesture('wave')">Wave</button>
-<button onclick="sendGesture('victory')">Victory</button>
-<button onclick="sendGesture('fail')">Fail</button><br>
+<button onclick="sendGesture('magic')">魔法 / Magic (magic)</button>
+<button onclick="sendGesture('wave')">揮手 / Wave (wave)</button>
+<button onclick="sendGesture('victory')">勝利 / Victory (victory)</button>
+<button onclick="sendGesture('fail')">失敗 / Fail (fail)</button><br>
 <!-- 第四列 -->
-<button onclick="sendGesture('fart')">Fart</button>
+<button onclick="sendGesture('fart')">放屁 / Fart (fart)</button>
 
 <script>
 let device, server, uartService, tx;
